@@ -63,38 +63,45 @@ function addBlogToList(blog) {
   commentBtn.textContent = "Comment";
 
   commentBtn.addEventListener('click', function () { // Changed from 'onclick' to 'addEventListener'
+    console.log(commentBtn);
     const text = commentInput.value.trim();
+
+    // // Dummy values for testing
+    // const dummyBlogId = 123; // Replace with a valid blog ID
+    // const dummyText = "This is a test comment."; // Replace with the desired comment text
+    // const dummyAuthor = "Test User"; // Replace with the desired author name
+
     if (text) {
       axios.post(`http://localhost:8000/add-comment`, {
         blogId: id,
         text: text,
-        blogauthor: "Your name" // Replace with the actual author name
+        blogauthor: "Hazard"// Replace with the actual author name
       })
-      .then(response => {
-        // Handle successful response (comment added)
-        console.log(response);
-        alert("Comment added successfully!");
+        .then(response => {
+          // Handle successful response (comment added)
+          console.log(response);
+          alert("Comment added successfully!");
 
-        // Optionally, you can perform additional actions such as updating the UI
-        commentInput.value = ''; // Clear the input field after adding the comment
-      })
-      .catch(error => {
-        if (error.response) {
-          // Handle error (comment not added)
-          console.error(error.response.data);
-          console.error('Response status:', error.response.status);
-          console.error('Response headers:', error.response.headers);
-          alert("Failed to add comment. Please try again.");
-        } else if (error.request) {
-          // Handle network error (comment not added)
-          console.error(error.request);
-          alert("Network error. Please try again.");
-        } else {
-          // Handle other errors (comment not added)
-          console.error('Error:', error.message);
-          alert("Failed to add comment. Please try again.");
-        }
-      });
+          // Optionally, you can perform additional actions such as updating the UI
+          commentInput.value = ''; // Clear the input field after adding the comment
+        })
+        .catch(error => {
+          if (error.response) {
+            // Handle error (comment not added)
+            console.error('Response data:', error.response.data);
+            console.error('Response status:', error.response.status);
+            console.error('Response headers:', error.response.headers);
+            alert("Failed to add comment. Please try again.");
+          } else if (error.request) {
+            // Handle network error (comment not added)
+            console.error(error.request);
+            alert("Network error. Please try again.");
+          } else {
+            // Handle other errors (comment not added)
+            console.error('Error:', error.message);
+            alert("Failed to add comment. Please try again.");
+          }
+        });
     } else {
       alert("Please enter a comment.");
     }
@@ -115,23 +122,66 @@ function addBlogToList(blog) {
     }
   });
 
-  // Function to retrieve all comments
-  const getAllComments = () => {
-    // Send a GET request to retrieve all comments
-    axios.get(`http://localhost:8000/get-all-comments`)
-    .then(response => {
-      // Handle successful response (comments retrieved)
-      console.log(response.data); // Assuming the server returns all comments
-    })
-    .catch(error => {
-      // Handle error (comments not retrieved)
-      console.error(error);
-      alert("Failed to retrieve comments. Please try again.");
-    });
-  };
 
-  // Retrieve all comments
-  getAllComments();
+  const getAllComments = (id) => {
+    // Send a GET request to retrieve all comments for a specific blog ID
+    axios.get(`http://localhost:8000/get-all-comments`)
+      .then(response => {
+        // Handle successful response (comments retrieved)
+        const comments = response.data.allComments; // Assuming the server returns all comments
+        // Assuming there's an element with id "comments-container" where comments will be displayed
+        const commentsContainer = document.getElementById("comments-container");
+  
+        // Clear existing comments
+        commentsContainer.innerHTML = "";
+  
+        comments.forEach(comment => {
+          // Check if the comment belongs to the specified blog ID
+          if (comment.blogId === id) {
+            // Create elements to display comment information
+            const commentDiv = document.createElement("div");
+            commentDiv.classList.add("comment");
+  
+            const blogIdParagraph = document.createElement("p");
+            blogIdParagraph.textContent = "Blog ID: " + comment.blogId;
+  
+            const textParagraph = document.createElement("p");
+            textParagraph.textContent = "Text: " + comment.text;
+  
+            const blogAuthorParagraph = document.createElement("p");
+            blogAuthorParagraph.textContent = "Blog Author: " + comment.blogauthor;
+  
+            // Append elements to comment div
+            commentDiv.appendChild(blogIdParagraph);
+            commentDiv.appendChild(textParagraph);
+            commentDiv.appendChild(blogAuthorParagraph);
+  
+            // Append comment div to comments container
+            commentsContainer.appendChild(commentDiv);
+          }
+        });
+      })
+      .catch(error => {
+        console.error("Error Fetching comments:", error);
+        // Handle error (comments not retrieved)
+        console.error(error);
+        if (error.message) {
+          console.error('Response data:', error.response.data);
+          console.error('Response status:', error.response.status);
+          console.error('Response headers:', error.response.headers);
+        } else {
+          console.error('Error:', error.message);
+        }
+        alert("Failed to retrieve comments. Please try again.");
+      });
+  };
+  
+  // Retrieve all comments for a specific blog ID and display them
+  const blogId = id ; // Replace 'your_blog_id_here' with the actual blog ID
+  getAllComments(blogId);
+  
+
+
 
 
 
@@ -183,7 +233,7 @@ function addBlogToList(blog) {
 
   //   liEle.removeChild(li);
   // }
-}
+};
 
 
 

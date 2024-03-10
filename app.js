@@ -6,7 +6,7 @@ const Cors = require('cors');
 
 const sequelize = require('./util/database');
 const adminRoutes = require('./routes/admin');
-const commentRoutes = require('./routes/comment');
+// const commentRoutes = require('./routes/comment');
 const { JSON } = require('sequelize');
 const Blog = require('./models/blog');
 // const Comment = require('./models/comment');
@@ -17,6 +17,7 @@ const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(express.static(path.join(__dirname, 'public', 'js')));
+app.use(bodyParser.json());
 
 
 // app.use(cors());
@@ -26,7 +27,7 @@ app.use(Cors({
     allowedHeaders: ['Content-Type', 'Authorization'], // Allow only specified headers
   }));
 app.use(adminRoutes);
-app.use(commentRoutes);
+// app.use(commentRoutes);
 
 
 app.get('/blog/add-blogs', async (req, res) => {
@@ -38,6 +39,8 @@ app.get('/blog/add-blogs', async (req, res) => {
         res.status(500).json({ error: error });
     }
 });
+
+
 
 // app.get('/blog/comment-blogs' , async (req, res, next) => {
 //         try {
